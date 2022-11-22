@@ -30,6 +30,11 @@ func init() {
 	if os.Getenv("TEST_ZABBIX_URL") == "" {
 		log.Fatal("Set environment variables TEST_ZABBIX_URL (and optionally TEST_ZABBIX_USER and TEST_ZABBIX_PASSWORD)")
 	}
+
+	// set test host group name
+	if os.Getenv("TEST_ZABBIX_HOST_GROUP") == "" {
+		log.Fatal("Set environment variables TEST_ZABBIX_HOST_GROUP")
+	}
 }
 
 func getHost() string {
