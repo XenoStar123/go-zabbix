@@ -121,6 +121,7 @@ func (api *API) CallWithError(method string, params interface{}) (response Respo
 // Calls "user.login" API method and fills api.Auth field.
 // This method modifies API structure and should not be called concurrently with other methods.
 func (api *API) Login(user, password string) (auth string, err error) {
+	api.auth = ""
 	params := map[string]string{"user": user, "password": password}
 	response, err := api.CallWithError("user.login", params)
 	if err != nil {
