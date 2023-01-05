@@ -2,7 +2,6 @@ package zabbix_test
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"testing"
 )
@@ -21,6 +20,6 @@ func TestHostGroups(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		log.Printf("group: %s", b)
+		t.Logf("hostGroup: %s", b)
 	}
 }

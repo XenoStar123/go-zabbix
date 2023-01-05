@@ -69,12 +69,12 @@ func getAPI(t *testing.T) *zabbix.API {
 
 func TestBadCalls(t *testing.T) {
 	api := getAPI(t)
-	res, err := api.Call("", nil)
+	resp, err := api.Call("", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if res.Error.Code != -32602 {
-		t.Errorf("Expected code -32602, got %s", res.Error)
+	if resp.Error.Code != -32602 {
+		t.Errorf("Expected code -32602, got %s", resp.Error)
 	}
 }
 
@@ -93,6 +93,6 @@ func TestVersion(t *testing.T) {
 func ExampleAPI_Call() {
 	api := zabbix.NewAPI("http://host/api_jsonrpc.php")
 	api.Login("user", "password")
-	res, _ := api.Call("item.get", zabbix.Params{"itemids": "23970", "output": "extend"})
-	log.Print(res)
+	resp, _ := api.Call("item.get", zabbix.Params{"itemids": "23970", "output": "extend"})
+	log.Print(resp)
 }
