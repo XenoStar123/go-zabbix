@@ -82,6 +82,8 @@ func (api *API) callBytes(method string, params interface{}) (b []byte, err erro
 	if err != nil {
 		return
 	}
+	// bugfix: EOF prevents re-use of TCP connections between requests to the same hosts
+	req.Close = true
 	req.ContentLength = int64(len(b))
 	req.Header.Add("Content-Type", "application/json-rpc")
 	// req.Header.Add("User-Agent", "github.com/XenoStar123/go-zabbix")
