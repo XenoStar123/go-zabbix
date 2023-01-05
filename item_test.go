@@ -1,8 +1,6 @@
 package zabbix_test
 
 import (
-	"encoding/json"
-	"log"
 	"os"
 	"testing"
 )
@@ -36,11 +34,8 @@ func TestItems(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, i := range items {
-		b, err := json.Marshal(i)
-		if err != nil {
-			t.Fatal(err)
-		}
-		log.Printf("item: %s", b)
+	m := items.ByHostId()
+	for hostId, items := range m {
+		t.Logf("hostId: %s item len: %v", hostId, len(items))
 	}
 }

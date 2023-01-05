@@ -16,3 +16,6 @@
 
 # VSCode files
 .vscode/
+
+# Set environment variables scripts
+*.bat
