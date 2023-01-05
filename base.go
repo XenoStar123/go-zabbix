@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"sync/atomic"
 )
 
 type (
@@ -56,7 +55,7 @@ type API struct {
 // It also may contain HTTP basic auth username and password like
 // http://username:password@host/api_jsonrpc.php.
 func NewAPI(url string) (api *API) {
-	return &API{url: url, c: http.Client{}}
+	return &API{url: url, c: http.Client{}, id: 1}
 }
 
 // Allows one to use specific http.Client, for example with InsecureSkipVerify transport.
@@ -71,8 +70,8 @@ func (api *API) printf(format string, v ...interface{}) {
 }
 
 func (api *API) callBytes(method string, params interface{}) (b []byte, err error) {
-	id := atomic.AddInt32(&api.id, 1)
-	jsonobj := request{"2.0", method, params, api.auth, id}
+	// id := atomic.AddInt32(&api.id, 1)
+	jsonobj := request{"2.0", method, params, api.auth, api.id}
 	b, err = json.Marshal(jsonobj)
 	if err != nil {
 		return
@@ -87,15 +86,15 @@ func (api *API) callBytes(method string, params interface{}) (b []byte, err erro
 	req.Header.Add("Content-Type", "application/json-rpc")
 	// req.Header.Add("User-Agent", "github.com/XenoStar123/go-zabbix")
 
-	res, err := api.c.Do(req)
+	resp, err := api.c.Do(req)
 	if err != nil {
 		api.printf("Error   : %s", err)
 		return
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 
-	b, err = io.ReadAll(res.Body)
-	api.printf("Response (%d): %s", res.StatusCode, b)
+	b, err = io.ReadAll(resp.Body)
+	api.printf("Response (%d): %s", resp.StatusCode, b)
 	return
 }
 
