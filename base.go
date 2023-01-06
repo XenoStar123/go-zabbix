@@ -111,7 +111,9 @@ func (api *API) Call(method string, params interface{}) (response Response, err 
 	}
 	if err == nil {
 		err = json.Unmarshal(b, &response)
-		err = fmt.Errorf("json.Unmarshal: %v", err)
+		if err != nil {
+			err = fmt.Errorf("json.Unmarshal: %v", err)
+		}
 	}
 	return
 }
