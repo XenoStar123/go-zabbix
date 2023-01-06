@@ -75,13 +75,13 @@ func (api *API) callBytes(method string, params interface{}) (b []byte, err erro
 	jsonobj := request{"2.0", method, params, api.auth, id}
 	b, err = json.Marshal(jsonobj)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("json.Marshal: %v", err)
 	}
 	api.printf("Request (%s): %s", http.MethodPost, b)
 
 	req, err := http.NewRequest(http.MethodPost, api.url, bytes.NewReader(b))
 	if err != nil {
-		return
+		return nil, fmt.Errorf("http.NewRequest: %v", err)
 	}
 	req.ContentLength = int64(len(b))
 	req.Header.Add("Content-Type", "application/json-rpc")
@@ -90,21 +90,25 @@ func (api *API) callBytes(method string, params interface{}) (b []byte, err erro
 	res, err := api.c.Do(req)
 	if err != nil {
 		api.printf("Error   : %s", err)
-		return
+		return nil, fmt.Errorf("api.c.Do: %v", err)
 	}
 	defer res.Body.Close()
 
 	b, err = io.ReadAll(res.Body)
 	api.printf("Response (%d): %s", res.StatusCode, b)
-	return
+	return b, fmt.Errorf("io.ReadAll: %v", err)
 }
 
 // Calls specified API method. Uses api.Auth if not empty.
 // err is something network or marshaling related. Caller should inspect response.Error to get API error.
 func (api *API) Call(method string, params interface{}) (response Response, err error) {
 	b, err := api.callBytes(method, params)
+	if err != nil {
+		err = fmt.Errorf("api.callBytes: %v", err)
+	}
 	if err == nil {
 		err = json.Unmarshal(b, &response)
+		err = fmt.Errorf("json.Unmarshal: %v", err)
 	}
 	return
 }
@@ -112,8 +116,12 @@ func (api *API) Call(method string, params interface{}) (response Response, err 
 // Uses Call() and then sets err to response.Error if former is nil and latter is not.
 func (api *API) CallWithError(method string, params interface{}) (response Response, err error) {
 	response, err = api.Call(method, params)
+	if err != nil {
+		err = fmt.Errorf("api.Call: %v", err)
+	}
 	if err == nil && response.Error != nil {
 		err = response.Error
+		err = fmt.Errorf("response.Error: %v", err)
 	}
 	return
 }

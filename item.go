@@ -1,5 +1,7 @@
 package zabbix
 
+import "fmt"
+
 // ValueType value_type
 // (required)	integer	Type of information of the item.
 // Possible values:
@@ -52,12 +54,12 @@ func (api *API) ItemsGet(params Params) (res Items, err error) {
 	}
 	response, err := api.CallWithError("item.get", params)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("api.CallWithError: %v", err)
 	}
 
 	err = response.Bind(&res)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("response.Bind: %v", err)
 	}
 	return
 }
