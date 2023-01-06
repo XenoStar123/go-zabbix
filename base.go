@@ -95,8 +95,11 @@ func (api *API) callBytes(method string, params interface{}) (b []byte, err erro
 	defer res.Body.Close()
 
 	b, err = io.ReadAll(res.Body)
+	if err != nil {
+		err = fmt.Errorf("io.ReadAll: %v", err)
+	}
 	api.printf("Response (%d): %s", res.StatusCode, b)
-	return b, fmt.Errorf("io.ReadAll: %v", err)
+	return
 }
 
 // Calls specified API method. Uses api.Auth if not empty.
